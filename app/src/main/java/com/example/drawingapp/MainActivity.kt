@@ -3,12 +3,14 @@ package com.example.drawingapp
 import android.Manifest
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -20,6 +22,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -72,7 +81,6 @@ class MainActivity : AppCompatActivity() {
         we have created our own view named Drawingview, just like
         other predefined views like button view , text view etc
          */
-
         drawingView = findViewById(R.id.drawing_view)
         drawingView?.setSizeForBrush(10.toFloat())
 
@@ -103,6 +111,19 @@ class MainActivity : AppCompatActivity() {
             drawingView?.onClickRedo()
         }
 
+        val ibSave : ImageButton = findViewById(R.id.ib_save)
+        ibSave.setOnClickListener {
+            if(isReadStorageAllowed())
+            {
+                lifecycleScope.launch {
+                    val flDrawingView : FrameLayout = findViewById(R.id.fl_drawing_view_container)
+
+                    saveBitmapFile ( getBitmapFromView ( flDrawingView) )
+                }
+            }
+
+        }
+
     }
 
     private fun requestStoragePermission()
@@ -118,6 +139,15 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ))
         }
+    }
+
+    //in new versions right to read also gives right to write
+    private fun isReadStorageAllowed() : Boolean
+    {
+        val result = ContextCompat.checkSelfPermission(this,
+            Manifest.permission.READ_EXTERNAL_STORAGE)
+
+        return result == PackageManager.PERMISSION_GRANTED
     }
 
     private fun showBrushSizeChooserDialog()
@@ -173,6 +203,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /*
+
     //since we cannot save views but we can save bitmaps so
     //we create bitmap from view to save it
 
@@ -180,6 +212,9 @@ class MainActivity : AppCompatActivity() {
     // background (background of view),
     // view (thing that contains our canvas) and
     // canvas (where we have all of our colors)
+
+
+     */
     private fun getBitmapFromView(view: View) : Bitmap
     {
         val returnedBitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
@@ -206,10 +241,54 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun showRationaleDialog(
-        title: String,
-        message: String,
-    ) {
+    private suspend fun saveBitmapFile(mBitmap: Bitmap?) : String
+    {
+        var result = ""
+        withContext(Dispatchers.IO)
+        {
+            if(mBitmap != null)
+            {
+                try {
+                    val bytes = ByteArrayOutputStream()
+                    mBitmap.compress(Bitmap.CompressFormat.PNG, 90, bytes)
+
+                    //location for file
+                    val f = File(externalCacheDir?.absoluteFile.toString() +
+                            File.separator  + "KidsDrawingApp_" +
+                            System.currentTimeMillis()/1000 + ".png")
+
+                    val fo = FileOutputStream(f)
+                    fo.write(bytes.toByteArray())
+                    fo.close()
+
+                    result = f.absolutePath
+
+                    runOnUiThread {
+                        if(result.isNotEmpty())
+                        {
+                            Toast.makeText(this@MainActivity, "file successfully saved to $result", Toast.LENGTH_SHORT).show()
+                        }
+                        else
+                        {
+                            Toast.makeText(this@MainActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                catch (e : Exception) {
+                    result = ""
+                    e.printStackTrace()
+
+                }
+
+            }
+        }
+
+        return  result
+
+    }
+
+    private fun showRationaleDialog(title: String, message: String, )
+    {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle(title)
             .setMessage(message)
