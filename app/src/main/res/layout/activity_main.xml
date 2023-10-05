@@ -43,7 +43,7 @@
 
     </FrameLayout>
 <!--
-<com.example.drawinsgapp.DrawingView
+<com.example.drawinsgapp.com.example.drawingapp.DrawingView
     android:id="@+id/drawing_view"
 
     android:layout_width="0dp"
@@ -223,6 +223,33 @@
             android:layout_margin="5dp"
 
             android:src="@drawable/ic_gallery"
+
+            android:scaleType="fitXY"
+
+            />
+        <ImageButton
+            android:id="@+id/ib_undo"
+
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+
+            android:layout_margin="5dp"
+
+            android:src="@drawable/ic_undo"
+
+            android:scaleType="fitXY"
+
+            />
+
+        <ImageButton
+            android:id="@+id/ib_redo"
+
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+
+            android:layout_margin="5dp"
+
+            android:src="@drawable/ic_redo"
 
             android:scaleType="fitXY"
 

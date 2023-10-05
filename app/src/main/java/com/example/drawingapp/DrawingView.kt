@@ -1,4 +1,4 @@
-package com.example. drawingapp
+package com.example.drawingapp
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -22,10 +22,30 @@ class DrawingView(context : Context, attrs: AttributeSet) : View(context,  attrs
     private var canvas: Canvas? = null
     private val mPaths = ArrayList<CustomPath>()
 
+    private val mUndoPaths = ArrayList<CustomPath>()
+
 
     init
     {
         setUpDrawing()
+    }
+
+    fun onClickUndo()
+    {
+        if(mPaths.size > 0)
+        {
+            mUndoPaths.add(mPaths.removeAt(mPaths.size - 1))
+            invalidate()
+        }
+
+    }
+
+    fun onClickRedo() {
+        if(mUndoPaths.size>0)
+        {
+            mPaths.add(mUndoPaths.removeAt(mPaths.size-1))
+            invalidate()
+        }
     }
 
     private fun setUpDrawing()
@@ -52,7 +72,6 @@ class DrawingView(context : Context, attrs: AttributeSet) : View(context,  attrs
 
     }
 
-
     override fun onDraw(canvas: Canvas) // we changed Canvas? to Canvas
     {
         super.onDraw(canvas)
@@ -77,7 +96,8 @@ class DrawingView(context : Context, attrs: AttributeSet) : View(context,  attrs
 
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
+    override fun onTouchEvent(event: MotionEvent?): Boolean
+    {
         val touchX = event?.x
         val touchY = event?.y
 
@@ -130,6 +150,8 @@ class DrawingView(context : Context, attrs: AttributeSet) : View(context,  attrs
         mDrawPaint!!.color = color
 
     }
+
+
 
     internal inner class CustomPath( var color: Int, var brushThickness: Float)  : Path()// here this path is android graphics but there is another java path also
     {
