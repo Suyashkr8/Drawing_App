@@ -3,6 +3,9 @@ package com.example.drawingapp
 import android.Manifest
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
@@ -167,6 +170,39 @@ class MainActivity : AppCompatActivity() {
 
             mImageButtonCurrentPaint = view
         }
+
+    }
+
+    //since we cannot save views but we can save bitmaps so
+    //we create bitmap from view to save it
+
+    //bit map is combination of
+    // background (background of view),
+    // view (thing that contains our canvas) and
+    // canvas (where we have all of our colors)
+    private fun getBitmapFromView(view: View) : Bitmap
+    {
+        val returnedBitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+
+        // now we want to bind the canvas that is on the view
+        val canvas = Canvas(returnedBitmap)
+
+        //yahan humne background ko canvas me daal diya
+        val bgDrawable = view.background
+        if(bgDrawable != null)
+        {
+            bgDrawable.draw(canvas)
+        }
+        else
+        {
+            canvas.drawColor(Color.WHITE)
+        }
+
+
+        //we draw the view on the canvas
+        //yahan humne view ko canvas me daal diya
+        view.draw(canvas)
+        return returnedBitmap
 
     }
 
