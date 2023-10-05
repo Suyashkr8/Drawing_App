@@ -140,10 +140,11 @@ class DrawingView(context : Context, attrs: AttributeSet) : View(context,  attrs
 
     }
 
-    fun onClickRedo() {
-        if(mUndoPaths.size>0)
+    fun onClickRedo()
+    {
+        if(mUndoPaths.size > 0)
         {
-            mPaths.add(mUndoPaths.removeAt(mPaths.size-1))
+            mPaths.add(mUndoPaths.removeAt(mUndoPaths.size-1))
             invalidate()
         }
     }
