@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.media.MediaScannerConnection
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
@@ -18,6 +19,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -69,12 +71,13 @@ class MainActivity : AppCompatActivity() {
                 else
                 {
                     // here this manifest is of android and not from java or any other class
-                    if(permissionName == Manifest.permission.READ_EXTERNAL_STORAGE)
+                    if(permissionName == Manifest.permission.READ_MEDIA_IMAGES)
                         Toast.makeText(this, "Permission Denied $$", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -128,6 +131,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestStoragePermission()
     {
         if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE))
@@ -137,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         else
         {
             requestPermission.launch(arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_MEDIA_IMAGES,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ))
         }
@@ -147,7 +151,7 @@ class MainActivity : AppCompatActivity() {
     private fun isReadStorageAllowed() : Boolean
     {
         val result = ContextCompat.checkSelfPermission(this,
-            Manifest.permission.READ_EXTERNAL_STORAGE)
+            Manifest.permission.READ_MEDIA_IMAGES)
 
         return result == PackageManager.PERMISSION_GRANTED
     }
