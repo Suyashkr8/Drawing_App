@@ -72,7 +72,10 @@ class MainActivity : AppCompatActivity() {
                 {
                     // here this manifest is of android and not from java or any other class
                     if(permissionName == Manifest.permission.READ_MEDIA_IMAGES)
-                        Toast.makeText(this, "Permission Denied $$", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Permission Denied for media images $$", Toast.LENGTH_SHORT).show()
+
+                    else if(permissionName == Manifest.permission.READ_EXTERNAL_STORAGE)
+                        Toast.makeText(this, "Permission Denied for external storage $$", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -142,18 +145,25 @@ class MainActivity : AppCompatActivity() {
         {
             requestPermission.launch(arrayOf(
                 Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ))
         }
     }
 
     //in new versions right to read also gives right to write
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun isReadStorageAllowed() : Boolean
     {
+        //for newer version , api 33 and above
         val result = ContextCompat.checkSelfPermission(this,
             Manifest.permission.READ_MEDIA_IMAGES)
 
-        return result == PackageManager.PERMISSION_GRANTED
+        //for older versions
+        val resultForOlderDevices = ContextCompat.checkSelfPermission(this,
+            Manifest.permission.READ_EXTERNAL_STORAGE)
+
+        return (result == PackageManager.PERMISSION_GRANTED) || (resultForOlderDevices == PackageManager.PERMISSION_GRANTED)
     }
 
     private fun showBrushSizeChooserDialog()
