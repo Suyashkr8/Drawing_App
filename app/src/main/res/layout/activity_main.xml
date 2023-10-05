@@ -239,6 +239,7 @@
 
             android:scaleType="fitXY"
 
+            android:contentDescription="@string/brush_image"
             />
 
         <ImageButton
@@ -250,6 +251,20 @@
             android:layout_margin="5dp"
 
             android:src="@drawable/ic_redo"
+
+            android:scaleType="fitXY"
+
+            />
+
+        <ImageButton
+            android:id="@+id/ib_save"
+
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+
+            android:layout_margin="5dp"
+
+            android:src="@drawable/ic_save"
 
             android:scaleType="fitXY"
 
