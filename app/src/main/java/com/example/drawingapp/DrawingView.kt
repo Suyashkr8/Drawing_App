@@ -30,24 +30,6 @@ class DrawingView(context : Context, attrs: AttributeSet) : View(context,  attrs
         setUpDrawing()
     }
 
-    fun onClickUndo()
-    {
-        if(mPaths.size > 0)
-        {
-            mUndoPaths.add(mPaths.removeAt(mPaths.size - 1))
-            invalidate()
-        }
-
-    }
-
-    fun onClickRedo() {
-        if(mUndoPaths.size>0)
-        {
-            mPaths.add(mUndoPaths.removeAt(mPaths.size-1))
-            invalidate()
-        }
-    }
-
     private fun setUpDrawing()
     {
         mDrawPaint = Paint()
@@ -60,8 +42,6 @@ class DrawingView(context : Context, attrs: AttributeSet) : View(context,  attrs
 
         mCanvasPaint = Paint(Paint.DITHER_FLAG)
         //mBrushSize = 20.toFloat()
-
-
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int)
@@ -148,10 +128,25 @@ class DrawingView(context : Context, attrs: AttributeSet) : View(context,  attrs
     {
         color = Color.parseColor(newColor)
         mDrawPaint!!.color = color
+    }
+
+    fun onClickUndo()
+    {
+        if(mPaths.size > 0)
+        {
+            mUndoPaths.add(mPaths.removeAt(mPaths.size - 1))
+            invalidate()
+        }
 
     }
 
-
+    fun onClickRedo() {
+        if(mUndoPaths.size>0)
+        {
+            mPaths.add(mUndoPaths.removeAt(mPaths.size-1))
+            invalidate()
+        }
+    }
 
     internal inner class CustomPath( var color: Int, var brushThickness: Float)  : Path()// here this path is android graphics but there is another java path also
     {

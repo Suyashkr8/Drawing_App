@@ -124,7 +124,6 @@ class MainActivity : AppCompatActivity() {
                     saveBitmapFile ( getBitmapFromView ( flDrawingView) )
                 }
             }
-
         }
 
     }
@@ -242,6 +241,37 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun shareImage(result : String)
+    {
+        MediaScannerConnection.scanFile(this, arrayOf(result), null)
+        {
+            path, uri ->
+            val shareIntent = Intent()
+            shareIntent.action = Intent.ACTION_SEND
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+            shareIntent.type = "image/png"
+
+            startActivity(Intent.createChooser(shareIntent, "share"))
+        }
+    }
+
+    private fun showProgressDialog()
+    {
+        customProgressDialog = Dialog(this@MainActivity)
+        customProgressDialog?.setContentView(R.layout.dialog_custom_progress)
+        customProgressDialog?.show()
+
+    }
+
+    private fun cancelProgressDialog()
+    {
+        if (customProgressDialog != null)
+        {
+            customProgressDialog?.dismiss()
+            customProgressDialog = null
+        }
+    }
+
     private suspend fun saveBitmapFile(mBitmap: Bitmap?) : String
     {
         var result = ""
@@ -288,37 +318,6 @@ class MainActivity : AppCompatActivity() {
         }
         return  result
 
-    }
-
-    private fun showProgressDialog()
-    {
-        customProgressDialog = Dialog(this@MainActivity)
-        customProgressDialog?.setContentView(R.layout.dialog_custom_progress)
-        customProgressDialog?.show()
-
-    }
-
-    private fun cancelProgressDialog()
-    {
-        if (customProgressDialog != null)
-        {
-            customProgressDialog?.dismiss()
-            customProgressDialog = null
-        }
-    }
-
-    private fun shareImage(result : String)
-    {
-        MediaScannerConnection.scanFile(this, arrayOf(result), null)
-        {
-            path, uri ->
-            val shareIntent = Intent()
-            shareIntent.action = Intent.ACTION_SEND
-            shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
-            shareIntent.type = "image/png"
-
-            startActivity(Intent.createChooser(shareIntent, "share"))
-        }
     }
 
     private fun showRationaleDialog(title: String, message: String, )
