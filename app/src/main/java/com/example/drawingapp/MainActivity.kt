@@ -158,6 +158,12 @@ class MainActivity : AppCompatActivity() {
         brushDialog.setContentView(R.layout.dialog_brush_size)
         brushDialog.setTitle("Brush Size: ")
 
+        val extraSmallBtn = brushDialog.findViewById<ImageButton>(R.id.ib_small_brush1)
+        extraSmallBtn.setOnClickListener {
+            drawingView?.setSizeForBrush(4.toFloat())
+            brushDialog.dismiss()
+        }
+
         val smallBtn = brushDialog.findViewById<ImageButton>(R.id.ib_small_brush)
         // we could have written like this also
         //val smallBtn : ImageButton = brushDialog.findViewById(R.id.ib_small_brush)
