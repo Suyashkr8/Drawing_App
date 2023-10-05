@@ -30,9 +30,10 @@ class MainActivity : AppCompatActivity() {
                 val permissionName = it.key
                 val isGranted = it.value
 
-                if(isGranted)
+                if(isGranted) {
                     Toast.makeText(this, "Permission granted now you can read storage files $$", Toast.LENGTH_SHORT).show()
 
+                }
                 else
                 {
                     // here this manifest is of android and not from java or any other class
