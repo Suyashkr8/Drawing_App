@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     private var drawingView: DrawingView? = null
     private var mImageButtonCurrentPaint : ImageButton? = null
+    private var customProgressDialog : Dialog? = null
 
     private val openGalleryLauncher : ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult())
@@ -115,6 +116,7 @@ class MainActivity : AppCompatActivity() {
         ibSave.setOnClickListener {
             if(isReadStorageAllowed())
             {
+                showProgressDialog()
                 lifecycleScope.launch {
                     val flDrawingView : FrameLayout = findViewById(R.id.fl_drawing_view_container)
 
@@ -163,7 +165,6 @@ class MainActivity : AppCompatActivity() {
             //Toast.makeText(this, "working", Toast.LENGTH_SHORT).show()
             drawingView?.setSizeForBrush(7.toFloat())
             brushDialog.dismiss()
-
         }
 
         val mediumBtn = brushDialog.findViewById<ImageButton>(R.id.ib_medium_brush)
@@ -197,7 +198,6 @@ class MainActivity : AppCompatActivity() {
             mImageButtonCurrentPaint!!.setImageDrawable(
                 ContextCompat.getDrawable(this, R.drawable.pallet_normal)
             )
-
             mImageButtonCurrentPaint = view
         }
 
@@ -264,6 +264,7 @@ class MainActivity : AppCompatActivity() {
                     result = f.absolutePath
 
                     runOnUiThread {
+                        cancelProgressDialog()
                         if(result.isNotEmpty())
                         {
                             Toast.makeText(this@MainActivity, "file successfully saved to $result", Toast.LENGTH_SHORT).show()
@@ -282,9 +283,25 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-
         return  result
 
+    }
+
+    private fun showProgressDialog()
+    {
+        customProgressDialog = Dialog(this@MainActivity)
+        customProgressDialog?.setContentView(R.layout.dialog_custom_progress)
+        customProgressDialog?.show()
+
+    }
+
+    private fun cancelProgressDialog()
+    {
+        if (customProgressDialog != null)
+        {
+            customProgressDialog?.dismiss()
+            customProgressDialog = null
+        }
     }
 
     private fun showRationaleDialog(title: String, message: String, )
