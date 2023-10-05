@@ -1,5 +1,6 @@
 package com.example.drawingapp
 
+import android.Manifest
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
@@ -7,7 +8,11 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
 
@@ -16,6 +21,26 @@ class MainActivity : AppCompatActivity() {
 
     private var drawingView: DrawingView? = null
     private var mImageButtonCurrentPaint : ImageButton? = null
+
+    private val requestPermission : ActivityResultLauncher<Array<String>> =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
+        {
+            permissions ->
+            permissions.entries.forEach {
+                val permissionName = it.key
+                val isGranted = it.value
+
+                if(isGranted)
+                    Toast.makeText(this, "Permission granted now you can read storage files $$", Toast.LENGTH_SHORT).show()
+
+                else
+                {
+                    // here this manifest is of android and not from java or any other class
+                    if(permissionName == Manifest.permission.READ_EXTERNAL_STORAGE)
+                        Toast.makeText(this, "Permission Denied $$", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +52,7 @@ class MainActivity : AppCompatActivity() {
          */
 
         drawingView = findViewById(R.id.drawing_view)
-        drawingView?.setSizeForBrush(20.toFloat())
+        drawingView?.setSizeForBrush(10.toFloat())
 
         val linearLayoutPaintColors = findViewById<LinearLayout>(R.id.ll_paint_colors)
         mImageButtonCurrentPaint = linearLayoutPaintColors[1] as ImageButton //as inside of linear layout we can have different types of buttons or views also
@@ -35,12 +60,32 @@ class MainActivity : AppCompatActivity() {
         mImageButtonCurrentPaint!!.setImageDrawable(
             ContextCompat.getDrawable(this, R.drawable.pallet_pressed)
         )
-        val ibBrush : ImageButton = findViewById(R.id.ib_brush)
 
+        val ibBrush : ImageButton = findViewById(R.id.ib_brush)
         ibBrush.setOnClickListener {
             showBrushSizeChooserDialog()
         }
 
+        val ibGallery : ImageButton = findViewById(R.id.ib_gallery)
+        ibGallery.setOnClickListener {
+            requestStoragePermission()
+        }
+
+    }
+
+    private fun requestStoragePermission()
+    {
+        if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE))
+        {
+            showRationaleDialog("Kids Drawing App","Kids drawing app needs access to external storage")
+        }
+        else
+        {
+            requestPermission.launch(arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ))
+        }
     }
 
     private fun showBrushSizeChooserDialog()
@@ -51,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
         val smallBtn = brushDialog.findViewById<ImageButton>(R.id.ib_small_brush)
         // we could have written like this also
-        //val smallBtn : Button = brushDialog.findViewById(R.id.ib_small_brush)
+        //val smallBtn : ImageButton = brushDialog.findViewById(R.id.ib_small_brush)
         smallBtn.setOnClickListener{
             //Toast.makeText(this, "working", Toast.LENGTH_SHORT).show()
             drawingView?.setSizeForBrush(7.toFloat())
@@ -94,6 +139,19 @@ class MainActivity : AppCompatActivity() {
             mImageButtonCurrentPaint = view
         }
 
+    }
+
+    private fun showRationaleDialog(
+        title: String,
+        message: String,
+    ) {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+        builder.create().show()
     }
 
 }
